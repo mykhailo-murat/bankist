@@ -96,7 +96,7 @@ tabsContainer.addEventListener('click', (e) => {
 
     //remove classes
     tabs.forEach(t => t.classList.remove('operations__tab--active'));
-    tabsContent.forEach(c=>c.classList.remove('operations__content--active'))
+    tabsContent.forEach(c => c.classList.remove('operations__content--active'))
 
     //activate classes
     clicked.classList.add('operations__tab--active');
@@ -107,26 +107,59 @@ tabsContainer.addEventListener('click', (e) => {
 })
 
 // menu fade
-const handleHover = function (e, opacity){
-    if (e.target.classList.contains('nav__link')){
+const handleHover = function (e, opacity) {
+    if (e.target.classList.contains('nav__link')) {
         const link = e.target;
         const siblings = link.closest('.nav').querySelectorAll('.nav__link')
         const logo = link.closest('.nav').querySelector('img')
 
-        siblings.forEach(el=>{
-            if (el!== link) el.style.opacity = opacity
+        siblings.forEach(el => {
+            if (el !== link) el.style.opacity = opacity
         })
-        logo.style.opacity= opacity
+        logo.style.opacity = opacity
     }
 }
 
 
 const nav = document.querySelector('.nav');
 
-nav.addEventListener('mouseover', function (e){handleHover(e, 0.5)});
+nav.addEventListener('mouseover', function (e) {
+    handleHover(e, 0.5)
+});
 
-nav.addEventListener('mouseout', function (e){handleHover(e, 1)});
+nav.addEventListener('mouseout', function (e) {
+    handleHover(e, 1)
+});
 
 // we can use bind
 // const handleHover = function (e)
 // nav.addEventListener('mouseover', handleHover.bind(1) );
+
+// sticky nav bad way 😑
+//
+// const initialCoords = section1.getBoundingClientRect().top
+// window.addEventListener('scroll', function () {
+//     if (window.scrollY > initialCoords) nav.classList.add('sticky')
+//     else nav.classList.remove('sticky')
+// })
+
+
+// sticky nav good
+const header = document.querySelector('.header')
+const navHeight = nav.getBoundingClientRect().height
+
+const stickyNav = function (entries) {
+    const [entry] = entries
+    if (!entry.isIntersecting) nav.classList.add('sticky')
+    else nav.classList.remove('sticky')
+}
+
+const headerObserver = new IntersectionObserver(
+    stickyNav, {
+        root: null,
+        threshold: 0,
+        rootMargin: `${navHeight}px`,
+    }
+)
+
+headerObserver.observe(header)
