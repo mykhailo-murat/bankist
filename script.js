@@ -185,3 +185,23 @@ sections.forEach(section => {
     sectionObserver.observe(section)
     section.classList.add('section--hidden')
 })
+
+
+// lazy loading
+const imgTargets = document.querySelectorAll('img[data-src]')
+
+const loadImg = function (entries, observer) {
+    const [entry] = entries
+    if (!entry.isIntersecting) return
+
+    entry.target.src = entry.target.dataset.src
+    entry.target.addEventListener('load', function (){
+        this.classList.remove('lazy-img')
+    })
+}
+const imgObserver = new IntersectionObserver(loadImg, {
+    root: null,
+    threshold: 0.1,
+})
+
+imgTargets.forEach(img => imgObserver.observe(img))
