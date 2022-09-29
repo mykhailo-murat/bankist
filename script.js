@@ -195,7 +195,7 @@ const loadImg = function (entries, observer) {
     if (!entry.isIntersecting) return
 
     entry.target.src = entry.target.dataset.src
-    entry.target.addEventListener('load', function (){
+    entry.target.addEventListener('load', function () {
         this.classList.remove('lazy-img')
     })
 }
@@ -205,3 +205,69 @@ const imgObserver = new IntersectionObserver(loadImg, {
 })
 
 imgTargets.forEach(img => imgObserver.observe(img))
+
+//SLIDER
+const slides = document.querySelectorAll('.slide')
+const maxSlides = slides.length
+const nextBtn = document.querySelector('.slider__btn--right')
+const prevBtn = document.querySelector('.slider__btn--left')
+let currentSlide = 0
+const dotsContainer = document.querySelector('.dots')
+
+const goToSlide = function (slide) {
+    slides.forEach((s, i) => {
+        s.style.transform = `translateX(${100 * (i - slide)}%)`
+    })
+}
+goToSlide(0)
+
+const createDots = function () {
+    slides.forEach(function (_, i) {
+        dotsContainer.insertAdjacentHTML('beforeend', `<button class="dots__dot" data-slide="${i}"> </button>`)
+    })
+}
+createDots()
+
+const activateDots = function (slide) {
+    document.querySelectorAll('.dots__dot').forEach(dot => dot.classList.remove('dots__dot--active'))
+    document.querySelector(`.dots__dot[data-slide="${slide}"]`).classList.add('dots__dot--active')
+}
+
+activateDots(0)
+
+const nextSlide = function () {
+    console.log(currentSlide)
+    if (currentSlide === maxSlides - 1) {
+        currentSlide = 0
+    } else {
+        currentSlide++
+    }
+    goToSlide(currentSlide)
+    activateDots(currentSlide)
+}
+const prevSlide = function () {
+    console.log(currentSlide)
+    if (currentSlide === 0) {
+        currentSlide = maxSlides - 1
+    } else {
+        currentSlide--
+    }
+    goToSlide(currentSlide)
+    activateDots(currentSlide)
+}
+
+nextBtn.addEventListener('click', nextSlide)
+prevBtn.addEventListener('click', prevSlide)
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') prevSlide()
+    if (e.key === 'ArrowRight') nextSlide()
+})
+
+dotsContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+        let targetSLide = e.target.dataset.slide
+        goToSlide(targetSLide)
+        activateDots(targetSLide)
+    }
+})
